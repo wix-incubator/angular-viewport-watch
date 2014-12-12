@@ -1,0 +1,9 @@
+.hero-unit{:"ng-controller" => "MainController as main"}
+  %h1
+    {{'general.YO' | translate}}
+    %i.logo-on-header.angular-viewport-watch-svg-font-icons-wix-logo
+  %p You now have
+  %ul
+    %li{:"ng-repeat" => "thing in main.awesomeThings"} {{thing}}
+  %p installed.
+  %h3 Enjoy coding! - Yeoman
