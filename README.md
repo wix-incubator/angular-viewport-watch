@@ -1,4 +1,4 @@
-Angular Viewport Watch [![Build Status](https://travis-ci.org/wix/angular-viewport-watch.svg?branch=master)](https://travis-ci.org/wix/angular-viewport-watch) [![Coverage Status](https://coveralls.io/repos/wix/angular-viewport-watch/badge.png?branch=master)](https://coveralls.io/r/wix/angular-viewport-watch?branch=master)
+Angular Viewport Watch [![Build Status](https://travis-ci.org/shahata/angular-viewport-watch.svg?branch=master)](https://travis-ci.org/shahata/angular-viewport-watch) [![Coverage Status](https://coveralls.io/repos/shahata/angular-viewport-watch/badge.png?branch=master)](https://coveralls.io/r/shahata/angular-viewport-watch?branch=master)
 ================
 
 Boost [Angular](http://www.angularjs.org) `ng-repeat` directive for long list by disabling watcher while element are not displayed inside viewport
