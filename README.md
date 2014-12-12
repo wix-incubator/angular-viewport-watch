@@ -1,7 +1,7 @@
 Angular Viewport Watch [![Build Status](https://travis-ci.org/shahata/angular-viewport-watch.svg?branch=master)](https://travis-ci.org/shahata/angular-viewport-watch) [![Coverage Status](https://coveralls.io/repos/shahata/angular-viewport-watch/badge.png?branch=master)](https://coveralls.io/r/shahata/angular-viewport-watch?branch=master)
 ================
 
-Boost performance of [Angular](http://www.angularjs.org)'s `ng-repeat` directive for long lists by disabling watcher while elements are not displayed inside viewport
+Boost performance of [Angular](http://www.angularjs.org)'s `ng-repeat` directive for long lists by disabling watchers while elements are not displayed inside viewport
 
 Demo: http://shahata.github.io/angular-viewport-watch/
 
