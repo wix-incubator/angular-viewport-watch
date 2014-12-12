@@ -12,7 +12,8 @@
     "app",
     "test",
     "maven",
-    "*.sublime*"
+    "*.sublime*",
+    "protractor-conf.js"
   ],
   "dependencies": {
     "angular": "^1.2.0",
