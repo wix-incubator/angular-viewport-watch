@@ -1,0 +1,54 @@
+{
+  "name": "scrollmonitor",
+  "version": "1.0.10",
+  "author": "Stu Kabakoff <stukabakoff@gmail.com>",
+  "description": "A simple and fast API to monitor DOM elements as you scroll",
+  "contributors": [
+    {
+      "name": "Stu Kabakoff",
+      "email": "stukabakoff@gmail.com"
+    },
+    {
+      "name": "Terrence Lee",
+      "email": "mr.lee@terrenceishere.com"
+    },
+    {
+      "name": "Roman Kalyakin",
+      "email": "roman@kalyakin.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sakabako/scrollMonitor.git"
+  },
+  "keywords": [
+    "scroll",
+    "dom"
+  ],
+  "main": "./scrollMonitor.js",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-launcher": "^1.0.0",
+    "chai": "~1.8.1",
+    "mocha": "~1.14.0",
+    "sinon": "~1.7.3",
+    "sinon-chai": "~2.4.0",
+    "testem": "~0.6.15"
+  },
+  "testling": {
+    "browsers": [
+      "ie6..latest",
+      "firefox/latest",
+      "chrome/latest",
+      "opera/latest",
+      "safari/latest"
+    ],
+    "harness": "mocha",
+    "files": [
+      "testling.js"
+    ]
+  },
+  "spm": {
+    "main": "scrollMonitor.js"
+  }
+}

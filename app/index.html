@@ -1,0 +1,62 @@
+<!doctype html>
+<html ng-app="angularViewportWatchApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>angularViewportWatch</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- build:css({.tmp,app}) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+  </head>
+  <body ng-controller="MainController as main">
+    <div style="position: fixed; background-color:yellow; padding: 2px; border: 1px solid black">
+      <div style="float: left" angular-stats watch-count=".watch-count" digest-length=".digest-length"
+           on-watch-count-update="onWatchCountUpdate(watchCount)"
+           on-digest-length-update="onDigestLengthUpdate(digestLength)">
+        Watch Count: <span class="watch-count"></span><br />
+        Digest Cycle Length: <span class="digest-length"></span>
+      </div>
+      <form style="float: left; padding-left: 10px">
+        <input ng-model="main.size">
+        <button ng-click="main.generate()">generate</button><br/>
+        <input ng-model="perf" type="checkbox">Hide watchers
+        <button ng-click="main.bump = main.bump + 1">bump</button>
+      </form>
+    </div>
+    <div style="padding-top: 50px"></div>
+    <hr/>
+    Click cells inside the table or bump button and see digest cycle length. Now toggle the "Hide watchers" checkbox to see the diff<br/><br/>
+    The "hide watchers" directive disables watchers while they
+    are out of viewport, which shrinks the digest cycle length.
+    This can be extremely useful when displaying repeaters with
+    dynamic data, where bind-once cannot help.<br/>
+    <hr/>
+    <table>
+    <tr ng-repeat="item in main.items"
+        ng-init="row = this"
+        viewport-watch>
+      <td ng-repeat="cell in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]"
+         ng-click="main.selected = [row.$index, $index]"
+         ng-class="{selected:
+                     main.selected[0] === row.$index &&
+                     main.selected[1] === $index}">{{cell + main.bump}}</td>
+    </tr>
+    </table>
+
+
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/ng-stats/dist/ng-stats.js"></script>
+    <script src="bower_components/scrollMonitor/scrollMonitor.js"></script>
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/main.js"></script>
+    <!-- endbuild --><!-- scripts -->
+    <!-- build:js({.tmp,app}) scripts/angular-viewport-watch.js -->
+    <script src="scripts/directives/viewport-watch.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>

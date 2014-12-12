@@ -9,24 +9,32 @@ module.exports = function (grunt) {
     });
   }});
   require('wix-gruntfile')(grunt, {
-    cdnify: 'vm',
     port: 9000,
     preloadModule: 'angularViewportWatchAppInternal',
-    translationsModule: 'angularViewportWatchTranslations',
-    svgFontName: 'angular-viewport-watch',
     unitTestFiles: unitTestFiles,
     protractor: true,
     bowerComponent: true
   });
 
   grunt.modifyTask('yeoman', {
-    //the address to which your local /_api is proxied to (to workaround CORS issues)
-    api: 'http://www.pizza.wixpress.com/_api/',
-    //the address that opens in your browser in grunt serve
-    //(domain should be the same as staging so cookies will be sent in api requests)
-    local: 'http://local.pizza.wixpress.com:<%= connect.options.port %>/'
+    local: 'http://localhost:<%= connect.options.port %>/'
   });
 
-  //Follow this URL for instructions on how to override built-in definitions:
-  //https://github.com/wix/wix-gruntfile/blob/master/README.md
+  grunt.modifyTask('karma', {
+    teamcity: {
+      coverageReporter: {dir: 'coverage/', type: 'lcov'}
+    }
+  });
+
+  grunt.modifyTask('copy', {
+    js: {
+      expand: true,
+      cwd: 'dist/scripts',
+      dest: '',
+      src: 'angular-viewport-watch.js'
+    }
+  });
+
+  grunt.hookTask('build').push('copy:js');
+
 };

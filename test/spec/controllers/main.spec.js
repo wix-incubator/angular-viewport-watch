@@ -5,8 +5,7 @@ describe('Controller: MainController', function () {
   // load the controller's module
   beforeEach(function () {
     module('angularViewportWatchAppInternal');
-
-    //add your mocks here
+    module({scrollMonitor: {update: angular.noop}});
   });
 
   var MainController, scope;
@@ -14,12 +13,15 @@ describe('Controller: MainController', function () {
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    MainController = $controller('MainController', {
+    MainController = $controller('MainController as main', {
       $scope: scope
     });
   }));
 
-  it('should attach a list of awesomeThings to the controller', function () {
-    expect(MainController.awesomeThings.length).toBe(6);
-  });
+  it('should add 500 items on startup', inject(function ($timeout) {
+    scope.$digest();
+    expect(MainController.items.length).toBe(0);
+    $timeout.flush();
+    expect(MainController.items.length).toBe(500);
+  }));
 });
