@@ -19,6 +19,14 @@
       link: function (scope, element, attr) {
         var elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || '0'));
 
+        function watchDuringDisable() {
+          /*jshint validthis:true */
+          this.$$watchersBackup = this.$$watchersBackup || [];
+          this.$$watchers = this.$$watchersBackup;
+          this.constructor.prototype.$watch.apply(this, arguments);
+          this.$$watchers = null;
+        }
+
         function toggleWatchers(scope, enable) {
           var digest, current, next = scope;
 
@@ -29,12 +37,14 @@
               if (current.hasOwnProperty('$$watchersBackup')) {
                 current.$$watchers = current.$$watchersBackup;
                 delete current.$$watchersBackup;
-                digest = true;
+                delete current.$watch;
+                digest = !scope.$root.$$phase;
               }
             } else {
               if (!current.hasOwnProperty('$$watchersBackup')) {
                 current.$$watchersBackup = current.$$watchers;
                 current.$$watchers = null;
+                current.$watch = watchDuringDisable;
               }
             }
 
@@ -49,7 +59,8 @@
             }
           } while (next);
 
-          if (digest && !scope.$root.$$phase) {
+          if (digest) {
+            //local digest only for this scope subtree
             scope.$digest();
           }
         }

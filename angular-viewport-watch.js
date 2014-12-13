@@ -13,6 +13,12 @@
             restrict: "AE",
             link: function(scope, element, attr) {
                 var elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || "0"));
+                function watchDuringDisable() {
+                    this.$$watchersBackup = this.$$watchersBackup || [];
+                    this.$$watchers = this.$$watchersBackup;
+                    this.constructor.prototype.$watch.apply(this, arguments);
+                    this.$$watchers = null;
+                }
                 function toggleWatchers(scope, enable) {
                     var digest, current, next = scope;
                     do {
@@ -21,12 +27,14 @@
                             if (current.hasOwnProperty("$$watchersBackup")) {
                                 current.$$watchers = current.$$watchersBackup;
                                 delete current.$$watchersBackup;
-                                digest = true;
+                                delete current.$watch;
+                                digest = !scope.$root.$$phase;
                             }
                         } else {
                             if (!current.hasOwnProperty("$$watchersBackup")) {
                                 current.$$watchersBackup = current.$$watchers;
                                 current.$$watchers = null;
+                                current.$watch = watchDuringDisable;
                             }
                         }
                         next = current.$$childHead;
@@ -38,7 +46,7 @@
                             }
                         }
                     } while (next);
-                    if (digest && !scope.$root.$$phase) {
+                    if (digest) {
                         scope.$digest();
                     }
                 }

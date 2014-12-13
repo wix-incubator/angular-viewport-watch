@@ -8,6 +8,8 @@ describe('Directive: viewportWatch', function () {
     enterViewport = undefined;
     exitViewport = undefined;
     isInViewport = true;
+    scope = undefined;
+    element = undefined;
     destroySpy = jasmine.createSpy('destroySpy');
 
     module('angularViewportWatch');
@@ -162,12 +164,21 @@ describe('Directive: viewportWatch', function () {
       expect(element.text()).toBe('55');
     });
 
-    // it('should perform initial digest if initially out of viewport', inject(function ($rootScope) {
-    //   isInViewport = false;
-    //   $rootScope.a = 5;
-    //   compile('{{a}}');
-    //   expect(element.text()).toBe('5');
-    // }));
+    it('should perform initial ng-repeat digest even if out of viewport',
+      inject(function ($compile, $rootScope) {
+        isInViewport = false;
+        scope = $rootScope.$new();
+        scope.a = 5;
+        element = $compile('<div><div ng-repeat="item in [a] track by $index" ' +
+                           'viewport-watch>{{item}}</div></div>')(scope);
+        scope.$digest();
+        expect(element.text()).toBe('5');
+        scope.$apply('a = 6');
+        expect(element.text()).toBe('5');
+        enterViewport();
+        expect(element.text()).toBe('6');
+      })
+    );
   });
 
   describe('update scroll watcher', function () {
@@ -242,6 +253,62 @@ describe('Directive: viewportWatch', function () {
       expect(element.text()).toBe('');
       scope.$broadcast('toggleWatchers', true);
       expect(element.text()).toBe('5');
+    });
+
+    it('should be okay to broadcast toggleWatchers during scope phase', function () {
+      scope.$apply(function () {
+        scope.$broadcast('toggleWatchers', false);
+      });
+      scope.$apply('a = 5');
+      expect(element.text()).toBe('');
+      scope.$apply(function () {
+        scope.$broadcast('toggleWatchers', true);
+      });
+      expect(element.text()).toBe('5');
+    });
+  });
+
+  describe('scope.$watch edge cases', function () {
+    beforeEach(function () {
+      compile('{{a}}');
+    });
+
+    it('should be able to remove watcher while watchers are disabled', function () {
+      var watchSpy = jasmine.createSpy('watchSpy');
+      var unwatch = scope.$watch(watchSpy);
+      scope.$broadcast('toggleWatchers', false);
+      unwatch();
+      scope.$broadcast('toggleWatchers', true);
+      scope.$digest();
+      expect(watchSpy).not.toHaveBeenCalled();
+    });
+
+    it('should be able to add watcher while watchers are disabled', function () {
+      var watchSpy = jasmine.createSpy('watchSpy');
+      scope.$broadcast('toggleWatchers', false);
+      scope.$watch(watchSpy);
+      scope.$broadcast('toggleWatchers', true);
+      scope.$digest();
+      expect(watchSpy).toHaveBeenCalled();
+    });
+
+    it('should be able to add watcher while watchers are disabled', function () {
+      var watchSpy = jasmine.createSpy('watchSpy');
+      compile();
+      scope.$broadcast('toggleWatchers', false);
+      scope.$watch(watchSpy);
+      scope.$broadcast('toggleWatchers', true);
+      scope.$digest();
+      expect(watchSpy).toHaveBeenCalled();
+    });
+
+    it('should be able to add watcher after watchers are enabled', function () {
+      var watchSpy = jasmine.createSpy('watchSpy');
+      scope.$broadcast('toggleWatchers', false);
+      scope.$broadcast('toggleWatchers', true);
+      scope.$watch(watchSpy);
+      scope.$digest();
+      expect(watchSpy).toHaveBeenCalled();
     });
   });
 
