@@ -42,7 +42,7 @@ angular.module('myApp', ['angularViewportWatch']);
 
 ## Manual watcher toggling
 
-In some cases you might want to disable or enable the watchers of some scope regardless of its position relative to the view port. This can be done easily by broadcasting an event to this scope:
+In some cases you might want to disable or enable the watchers of some scope regardless of its position relative to the view port. This can be done easily by broadcasting an event to this scope (this will effect only scopes that have the `viewport-watch` directive on them):
 
 ```js
 scope.$broadcast('toggleWatchers', false); //turn off watchers
