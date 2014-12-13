@@ -52,19 +52,19 @@ describe('Directive: viewportWatch', function () {
     });
 
     it('should perform digest normally', function () {
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('5');
     });
 
     it('should not perform digest if out of viewport', function () {
       exitViewport();
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('');
     });
 
     it('should perform digest when back in viewport', function () {
       exitViewport();
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('');
       enterViewport();
       expect(element.text()).toBe('5');
@@ -73,7 +73,7 @@ describe('Directive: viewportWatch', function () {
     it('should keep digesting normally after coming back', function () {
       exitViewport();
       enterViewport();
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('5');
     });
 
@@ -81,7 +81,7 @@ describe('Directive: viewportWatch', function () {
       exitViewport();
       exitViewport();
       enterViewport();
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('5');
     });
 
@@ -89,7 +89,7 @@ describe('Directive: viewportWatch', function () {
       exitViewport();
       enterViewport();
       enterViewport();
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('5');
     });
 
@@ -116,7 +116,7 @@ describe('Directive: viewportWatch', function () {
     it('should disable watchers in child scope', function () {
       compile('{{a}}<div ng-if="true">{{a}}</div>');
       exitViewport();
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('');
       enterViewport();
       expect(element.text()).toBe('55');
@@ -125,7 +125,7 @@ describe('Directive: viewportWatch', function () {
     it('should traverse tree with multiple children', function () {
       compile(dup('{{a}}<div ng-if="true">{{a}}</div>'));
       exitViewport();
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('');
       enterViewport();
       expect(element.text()).toBe('5555');
@@ -134,7 +134,7 @@ describe('Directive: viewportWatch', function () {
     it('should traverse tree recursively', function () {
       compile(dup('{{a}}<div ng-if="true">{{a}}<div ng-if="true">{{a}}</div></div>'));
       exitViewport();
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('');
       enterViewport();
       expect(element.text()).toBe('555555');
@@ -156,7 +156,7 @@ describe('Directive: viewportWatch', function () {
     it('should not perform digest if initially out of viewport', function () {
       isInViewport = false;
       compile('{{a}}<div ng-if="true">{{a}}</div>');
-      scope.$apply('a=5');
+      scope.$apply('a = 5');
       expect(element.text()).toBe('{{a}}');
       enterViewport();
       expect(element.text()).toBe('55');
@@ -223,6 +223,26 @@ describe('Directive: viewportWatch', function () {
       compile('', 'threshold');
       expect(scrollMonitor.create).toHaveBeenCalledWith(jasmine.any(Object), 500);
     }));
+  });
+
+  describe('toggleWatchers scope event', function () {
+    beforeEach(function () {
+      compile('{{a}}');
+    });
+
+    it('should not perform digest if toggleWatchers off was sent', function () {
+      scope.$broadcast('toggleWatchers', false);
+      scope.$apply('a = 5');
+      expect(element.text()).toBe('');
+    });
+
+    it('should perform digest when toggleWatchers back on was sent', function () {
+      scope.$broadcast('toggleWatchers', false);
+      scope.$apply('a = 5');
+      expect(element.text()).toBe('');
+      scope.$broadcast('toggleWatchers', true);
+      expect(element.text()).toBe('5');
+    });
   });
 
 });
