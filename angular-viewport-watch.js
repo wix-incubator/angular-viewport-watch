@@ -16,8 +16,9 @@
                 function watchDuringDisable() {
                     this.$$watchersBackup = this.$$watchersBackup || [];
                     this.$$watchers = this.$$watchersBackup;
-                    this.constructor.prototype.$watch.apply(this, arguments);
+                    var unwatch = this.constructor.prototype.$watch.apply(this, arguments);
                     this.$$watchers = null;
+                    return unwatch;
                 }
                 function toggleWatchers(scope, enable) {
                     var digest, current, next = scope;
