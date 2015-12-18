@@ -1,7 +1,7 @@
 "use strict";
 
 (function() {
-    function viewportWatch(scrollMonitor, $timeout) {
+    function viewportWatch(scrollMonitor, $timeout, $parse) {
         var viewportUpdateTimeout;
         function debouncedViewportUpdate() {
             $timeout.cancel(viewportUpdateTimeout);
@@ -12,6 +12,9 @@
         return {
             restrict: "AE",
             link: function(scope, element, attr) {
+                if($parse(attr.viewportWatch)(scope) == false)
+                    return false;
+
                 var elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || "0"));
                 function watchDuringDisable() {
                     this.$$watchersBackup = this.$$watchersBackup || [];
@@ -73,6 +76,6 @@
             }
         };
     }
-    viewportWatch.$inject = [ "scrollMonitor", "$timeout" ];
+    viewportWatch.$inject = [ "scrollMonitor", "$timeout", "$parse" ];
     angular.module("angularViewportWatch", []).directive("viewportWatch", viewportWatch).value("scrollMonitor", window.scrollMonitor);
 })();
