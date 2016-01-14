@@ -12,10 +12,14 @@
         return {
             restrict: "AE",
             link: function(scope, element, attr) {
-                if($parse(attr.viewportWatch)(scope) == false)
+                if($parse(attr.viewportWatch)(scope) == false){
                     return false;
+                }
 
-                var elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || "0"));
+                var container = (attr.viewportWatchContainer && attr.viewportWatchContainer.length > 1) ? attr.viewportWatchContainer : undefined;
+
+                var elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || "0"), container);
+
                 function watchDuringDisable() {
                     this.$$watchersBackup = this.$$watchersBackup || [];
                     this.$$watchers = this.$$watchersBackup;
