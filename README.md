@@ -37,8 +37,10 @@ angular.module('myApp', ['angularViewportWatch']);
 ## Directive Usage
 
 ```html
-<div ng-repeat="item in items" viewport-watch>...</div>
+<div ng-repeat="item in items" viewport-watch viewport-watch-container>...</div>
 ```
+
+To specify a different container to look at and listen to you can specify `viewport-watch-container`. It accepts a querySelector string.
 
 ## Manual watcher toggling
 
