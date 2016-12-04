@@ -12,7 +12,7 @@
         return {
             restrict: "AE",
             link: function(scope, element, attr) {
-                var elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || "0"));
+                var elementWatcher;
                 function watchDuringDisable() {
                     this.$$watchersBackup = this.$$watchersBackup || [];
                     this.$$watchers = this.$$watchersBackup;
@@ -57,12 +57,23 @@
                 function enableDigest() {
                     toggleWatchers(scope, true);
                 }
-                if (!elementWatcher.isInViewport) {
-                    scope.$evalAsync(disableDigest);
-                    debouncedViewportUpdate();
+                function createElementWatcher() {
+                    elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || "0"));
+                    if (!elementWatcher.isInViewport) {
+                        scope.$evalAsync(disableDigest);
+                        debouncedViewportUpdate();
+                    }
+                    elementWatcher.enterViewport(enableDigest);
+                    elementWatcher.exitViewport(disableDigest);
                 }
-                elementWatcher.enterViewport(enableDigest);
-                elementWatcher.exitViewport(disableDigest);
+                if ('$applyAsync' in scope) {
+                    // Wrapping scrollMonitor creation in $applyAsync prevents layout trashing in case this directive
+                    // is applied to ngRepeat-ed elements.
+                    scope.$applyAsync(createElementWatcher);
+                } else {
+                    // Angular pre-1.3 compatibility. Will cause Layout when each ngRepeat-ed element is rendered.
+                    createElementWatcher();
+                }
                 scope.$on("toggleWatchers", function(event, enable) {
                     toggleWatchers(scope, enable);
                 });
