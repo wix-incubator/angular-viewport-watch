@@ -17,7 +17,7 @@
   ],
   "dependencies": {
     "angular": "^1.2.0",
-    "scrollMonitor": "~1.0.10"
+    "scrollMonitor": "git@github.com:stutrek/scrollMonitor.git#~1.0.12"
   },
   "devDependencies": {
     "angular-mocks": "^1.2.0",
