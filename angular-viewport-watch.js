@@ -1,6 +1,7 @@
 "use strict";
 
 (function() {
+    viewportWatch.$inject = [ "scrollMonitor", "$timeout" ];
     function viewportWatch(scrollMonitor, $timeout) {
         var viewportUpdateTimeout;
         function debouncedViewportUpdate() {
@@ -16,9 +17,8 @@
                 function watchDuringDisable() {
                     this.$$watchersBackup = this.$$watchersBackup || [];
                     this.$$watchers = this.$$watchersBackup;
-                    var unwatch = this.constructor.prototype.$watch.apply(this, arguments);
+                    this.constructor.prototype.$watch.apply(this, arguments);
                     this.$$watchers = null;
-                    return unwatch;
                 }
                 function toggleWatchers(scope, enable) {
                     var digest, current, next = scope;
@@ -73,6 +73,5 @@
             }
         };
     }
-    viewportWatch.$inject = [ "scrollMonitor", "$timeout" ];
     angular.module("angularViewportWatch", []).directive("viewportWatch", viewportWatch).value("scrollMonitor", window.scrollMonitor);
 })();

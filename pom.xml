@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.wixpress</groupId>
+    <artifactId>angular-viewport-watch</artifactId>
+    <packaging>jar</packaging>
+    <name>angular-viewport-watch</name>
+    <version>1.1277.0-SNAPSHOT</version>
+    <description>angular viewport watch</description>
+    <developers>
+        <developer>
+            <name>Shahar Talmi</name>
+            <email>shahart@wix.com</email>
+            <roles>
+                <role>owner</role>
+            </roles>
+        </developer>
+    </developers>
+    <parent>
+        <groupId>com.wixpress</groupId>
+        <artifactId>wix-statics-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

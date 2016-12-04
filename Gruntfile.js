@@ -12,7 +12,7 @@ module.exports = function (grunt) {
     port: 9000,
     preloadModule: 'angularViewportWatchAppInternal',
     unitTestFiles: unitTestFiles,
-    protractor: true,
+    protractor: false,
     bowerComponent: true
   });
 

@@ -4,9 +4,20 @@
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^2.10.0",
-    "wix-gruntfile": "~0.1.2"
+    "wix-gruntfile": "~0.1.2",
+    "wix-statics-parent": "*"
   },
   "engines": {
     "node": ">=0.8.0"
+  },
+  "scripts": {
+    "build": "node_modules/wix-gruntfile/scripts/build.sh",
+    "release": "node_modules/wix-gruntfile/scripts/release.sh",
+    "test": "#tbd",
+    "start": "grunt serve"
+  },
+  "private": false,
+  "publishConfig": {
+    "registry": "http://repo.dev.wix/artifactory/api/npm/npm-local/"
   }
 }

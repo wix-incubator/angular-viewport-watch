@@ -17,7 +17,7 @@ describe('Directive: viewportWatch', function () {
     module({
       scrollMonitor: {
         update: jasmine.createSpy('update'),
-        create: jasmine.createSpy('create').andCallFake(function () {
+        create: jasmine.createSpy('create').and.callFake(function () {
           return {
             enterViewport: function (fn) {
               enterViewport = fn;
@@ -148,11 +148,11 @@ describe('Directive: viewportWatch', function () {
 
       scope.$watch(localWatchSpy);
       scope.$digest();
-      localWatchSpy.reset();
+      localWatchSpy.calls.reset();
 
       exitViewport();
       enterViewport();
-      expect(localWatchSpy.calls.length).toBe(1);
+      expect(localWatchSpy.calls.count()).toBe(1);
     });
 
     it('should not perform digest if initially out of viewport', function () {
@@ -191,7 +191,7 @@ describe('Directive: viewportWatch', function () {
       scope.$destroy();
       expect(scrollMonitor.update).not.toHaveBeenCalled();
       $timeout.flush();
-      expect(scrollMonitor.update.calls.length).toBe(1);
+      expect(scrollMonitor.update.calls.count()).toBe(1);
     }));
 
     it('should not trigger on create in viewport', function () {
@@ -203,7 +203,7 @@ describe('Directive: viewportWatch', function () {
       compile();
       expect(scrollMonitor.update).not.toHaveBeenCalled();
       $timeout.flush();
-      expect(scrollMonitor.update.calls.length).toBe(1);
+      expect(scrollMonitor.update.calls.count()).toBe(1);
     }));
 
     it('should debounce destroy trigger', inject(function ($timeout, scrollMonitor) {
@@ -214,7 +214,7 @@ describe('Directive: viewportWatch', function () {
       scope.$destroy();
       expect(scrollMonitor.update).not.toHaveBeenCalled();
       $timeout.flush();
-      expect(scrollMonitor.update.calls.length).toBe(1);
+      expect(scrollMonitor.update.calls.count()).toBe(1);
     }));
   });
 
