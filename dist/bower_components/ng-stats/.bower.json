@@ -1,0 +1,46 @@
+{
+  "name": "ng-stats",
+  "main": "dist/ng-stats.js",
+  "version": "2.0.4",
+  "authors": [
+    "Kent C. Dodds <kent@doddsfamily.us> (http://kent.doddsfamily.us)",
+    "Viper Bailey <jinxidoru@gmail.com> (http://jinxidoru.blogspot.com)"
+  ],
+  "contributors": [
+    "Kent C. Dodds <kent@doddsfamily.us> (http://kent.doddsfamily.us)",
+    "Viper Bailey <jinxidoru@gmail.com> (http://jinxidoru.blogspot.com)"
+  ],
+  "description": "Little utility to show stats about your page's angular digest/watches.",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "angular",
+    "ng-stats",
+    "angularjs",
+    "utilities"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/kentcdodds/ng-stats",
+  "ignore": [
+    "src",
+    ".gitignore",
+    ".bowerrc",
+    "Gruntfile.js",
+    "server.js"
+  ],
+  "dependencies": {
+    "angularjs": "~1.3.3"
+  },
+  "_release": "2.0.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.0.4",
+    "commit": "49083aa1ced1fc7be59b21120e92174920baa822"
+  },
+  "_source": "https://github.com/kentcdodds/ng-stats.git",
+  "_target": "~2.0.1",
+  "_originalSource": "ng-stats"
+}
