@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.6.4
+ * @license AngularJS v1.6.5
  * (c) 2010-2017 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -511,8 +511,8 @@ angular.mock.$IntervalProvider = function() {
       }
 
       repeatFns.push({
-        nextTime:(now + delay),
-        delay: delay,
+        nextTime: (now + (delay || 0)),
+        delay: delay || 1,
         fn: tick,
         id: nextRepeatId,
         deferred: deferred
@@ -562,10 +562,16 @@ angular.mock.$IntervalProvider = function() {
      * @return {number} The amount of time moved forward.
      */
     $interval.flush = function(millis) {
+      var before = now;
       now += millis;
       while (repeatFns.length && repeatFns[0].nextTime <= now) {
         var task = repeatFns[0];
         task.fn();
+        if (task.nextTime === before) {
+          // this can only happen the first time
+          // a zero-delay interval gets triggered
+          task.nextTime++;
+        }
         task.nextTime += task.delay;
         repeatFns.sort(function(a, b) { return a.nextTime - b.nextTime;});
       }
@@ -797,7 +803,7 @@ angular.mock.TzDate.prototype = Date.prototype;
  * You need to require the `ngAnimateMock` module in your test suite for instance `beforeEach(module('ngAnimateMock'))`
  */
 angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
-  .info({ angularVersion: '1.6.4' })
+  .info({ angularVersion: '1.6.5' })
 
   .config(['$provide', function($provide) {
 
@@ -1385,6 +1391,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         }
       }
 
+      handleResponse.description = method + ' ' + url;
       return handleResponse;
 
       function handleResponse() {
@@ -1891,7 +1898,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   $httpBackend.verifyNoOutstandingRequest = function(digest) {
     if (digest !== false) $rootScope.$digest();
     if (responses.length) {
-      throw new Error('Unflushed requests: ' + responses.length);
+      var unflushedDescriptions = responses.map(function(res) { return res.description; });
+      throw new Error('Unflushed requests: ' + responses.length + '\n  ' +
+                      unflushedDescriptions.join('\n  '));
     }
   };
 
@@ -2416,7 +2425,7 @@ angular.module('ngMock', ['ng']).provider({
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
   $provide.decorator('$controller', createControllerDecorator($compileProvider));
   $provide.decorator('$httpBackend', angular.mock.$httpBackendDecorator);
-}]).info({ angularVersion: '1.6.4' });
+}]).info({ angularVersion: '1.6.5' });
 
 /**
  * @ngdoc module
@@ -2431,7 +2440,7 @@ angular.module('ngMock', ['ng']).provider({
  */
 angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
   $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-}]).info({ angularVersion: '1.6.4' });
+}]).info({ angularVersion: '1.6.5' });
 
 /**
  * @ngdoc service
