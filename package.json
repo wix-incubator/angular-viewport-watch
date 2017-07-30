@@ -1,6 +1,6 @@
 {
   "name": "angular-viewport-watch",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^2.10.0",
@@ -14,8 +14,7 @@
     "build": "node_modules/wix-gruntfile/scripts/build.sh",
     "release": "node_modules/wix-gruntfile/scripts/release.sh",
     "test": "#tbd",
-    "start": "grunt serve",
-    "postinstall": "node_modules/wix-gruntfile/scripts/postinstall.sh"
+    "start": "grunt serve"
   },
   "private": false,
   "publishConfig": {
