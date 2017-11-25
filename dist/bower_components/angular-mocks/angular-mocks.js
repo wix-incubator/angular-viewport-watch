@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.6.6
+ * @license AngularJS v1.6.7
  * (c) 2010-2017 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -803,7 +803,7 @@ angular.mock.TzDate.prototype = Date.prototype;
  * You need to require the `ngAnimateMock` module in your test suite for instance `beforeEach(module('ngAnimateMock'))`
  */
 angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
-  .info({ angularVersion: '1.6.6' })
+  .info({ angularVersion: '1.6.7' })
 
   .config(['$provide', function($provide) {
 
@@ -1445,10 +1445,16 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         return;
       }
     }
-    throw wasExpected ?
+    var error = wasExpected ?
         new Error('No response defined !') :
         new Error('Unexpected request: ' + method + ' ' + url + '\n' +
                   (expectation ? 'Expected ' + expectation : 'No more request expected'));
+
+    // In addition to be being converted to a rejection, this error also needs to be passed to
+    // the $exceptionHandler and be rethrown (so that the test fails).
+    error.$$passToExceptionHandler = true;
+
+    throw error;
   }
 
   /**
@@ -2373,14 +2379,9 @@ angular.mock.$ComponentControllerProvider = ['$compileProvider',
  * @packageName angular-mocks
  * @description
  *
- * # ngMock
- *
- * The `ngMock` module provides support to inject and mock Angular services into unit tests.
- * In addition, ngMock also extends various core ng services such that they can be
+ * The `ngMock` module provides support to inject and mock AngularJS services into unit tests.
+ * In addition, ngMock also extends various core AngularJS services such that they can be
  * inspected and controlled in a synchronous manner within test code.
- *
- *
- * <div doc-module-components="ngMock"></div>
  *
  * @installation
  *
@@ -2425,7 +2426,7 @@ angular.module('ngMock', ['ng']).provider({
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
   $provide.decorator('$controller', createControllerDecorator($compileProvider));
   $provide.decorator('$httpBackend', angular.mock.$httpBackendDecorator);
-}]).info({ angularVersion: '1.6.6' });
+}]).info({ angularVersion: '1.6.7' });
 
 /**
  * @ngdoc module
@@ -2440,7 +2441,7 @@ angular.module('ngMock', ['ng']).provider({
  */
 angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
   $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-}]).info({ angularVersion: '1.6.6' });
+}]).info({ angularVersion: '1.6.7' });
 
 /**
  * @ngdoc service
@@ -2494,7 +2495,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *
  * Afterwards, bootstrap your app with this new module.
  *
- * ## Example
+ * @example
  * <example name="httpbackend-e2e-testing" module="myAppE2E" deps="angular-mocks.js">
  * <file name="app.js">
  *   var myApp = angular.module('myApp', []);
@@ -3275,25 +3276,25 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
     if (/transitionend/.test(eventType)) {
       if (window.WebKitTransitionEvent) {
         evnt = new window.WebKitTransitionEvent(eventType, eventData);
-        evnt.initEvent(eventType, false, true);
+        evnt.initEvent(eventType, eventData.bubbles, true);
       } else {
         try {
           evnt = new window.TransitionEvent(eventType, eventData);
         } catch (e) {
           evnt = window.document.createEvent('TransitionEvent');
-          evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
+          evnt.initTransitionEvent(eventType, eventData.bubbles, null, null, eventData.elapsedTime || 0);
         }
       }
     } else if (/animationend/.test(eventType)) {
       if (window.WebKitAnimationEvent) {
         evnt = new window.WebKitAnimationEvent(eventType, eventData);
-        evnt.initEvent(eventType, false, true);
+        evnt.initEvent(eventType, eventData.bubbles, true);
       } else {
         try {
           evnt = new window.AnimationEvent(eventType, eventData);
         } catch (e) {
           evnt = window.document.createEvent('AnimationEvent');
-          evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
+          evnt.initAnimationEvent(eventType, eventData.bubbles, null, null, eventData.elapsedTime || 0);
         }
       }
     } else if (/touch/.test(eventType) && supportsTouchEvents()) {
