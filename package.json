@@ -1,6 +1,6 @@
 {
   "name": "angular-viewport-watch",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^2.10.0",
