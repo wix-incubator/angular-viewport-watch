@@ -1,6 +1,6 @@
 /**
- * @license AngularJS v1.6.8
- * (c) 2010-2017 Google, Inc. http://angularjs.org
+ * @license AngularJS v1.6.9
+ * (c) 2010-2018 Google, Inc. http://angularjs.org
  * License: MIT
  */
 (function(window, angular) {
@@ -803,7 +803,7 @@ angular.mock.TzDate.prototype = Date.prototype;
  * You need to require the `ngAnimateMock` module in your test suite for instance `beforeEach(module('ngAnimateMock'))`
  */
 angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
-  .info({ angularVersion: '1.6.8' })
+  .info({ angularVersion: '1.6.9' })
 
   .config(['$provide', function($provide) {
 
@@ -969,7 +969,7 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
  *
  * *NOTE*: This is not an injectable instance, just a globally available function.
  *
- * Method for serializing common angular objects (scope, elements, etc..) into strings.
+ * Method for serializing common AngularJS objects (scope, elements, etc..) into strings.
  * It is useful for logging objects to the console when debugging.
  *
  * @param {*} object - any object to turn into string.
@@ -1051,7 +1051,7 @@ angular.mock.dump = function(object) {
  * This mock implementation can be used to respond with static or dynamic responses via the
  * `expect` and `when` apis and their shortcuts (`expectGET`, `whenPOST`, etc).
  *
- * When an Angular application needs some data from a server, it calls the $http service, which
+ * When an AngularJS application needs some data from a server, it calls the $http service, which
  * sends the request to a real server using $httpBackend service. With dependency injection, it is
  * easy to inject $httpBackend mock (which has the same API as $httpBackend) and use it to verify
  * the requests and respond with some testing data without sending a request to a real server.
@@ -2120,7 +2120,7 @@ function MockXhr() {
   this.abort = angular.noop;
 
   // This section simulates the events on a real XHR object (and the upload object)
-  // When we are testing $httpBackend (inside the angular project) we make partial use of this
+  // When we are testing $httpBackend (inside the AngularJS project) we make partial use of this
   // but store the events directly ourselves on `$$events`, instead of going through the `addEventListener`
   this.$$events = {};
   this.addEventListener = function(name, listener) {
@@ -2426,7 +2426,7 @@ angular.module('ngMock', ['ng']).provider({
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
   $provide.decorator('$controller', createControllerDecorator($compileProvider));
   $provide.decorator('$httpBackend', angular.mock.$httpBackendDecorator);
-}]).info({ angularVersion: '1.6.8' });
+}]).info({ angularVersion: '1.6.9' });
 
 /**
  * @ngdoc module
@@ -2435,13 +2435,13 @@ angular.module('ngMock', ['ng']).provider({
  * @packageName angular-mocks
  * @description
  *
- * The `ngMockE2E` is an angular module which contains mocks suitable for end-to-end testing.
+ * The `ngMockE2E` is an AngularJS module which contains mocks suitable for end-to-end testing.
  * Currently there is only one mock present in this module -
  * the {@link ngMockE2E.$httpBackend e2e $httpBackend} mock.
  */
 angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
   $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-}]).info({ angularVersion: '1.6.8' });
+}]).info({ angularVersion: '1.6.9' });
 
 /**
  * @ngdoc service
