@@ -13,7 +13,13 @@
         return {
             restrict: "AE",
             link: function(scope, element, attr) {
-                var elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || "0"));
+                var elementWatcher;
+				if (attr.containerId){
+					var containerMonitor = scrollMonitor.createContainer(document.getElementById(attr.containerId));
+					elementWatcher = containerMonitor.create(element, scope.$eval(attr.viewportWatch || '0'));
+				} else {
+					elementWatcher = scrollMonitor.create(element, scope.$eval(attr.viewportWatch || "0"));
+				}
                 function watchDuringDisable() {
                     this.$$watchersBackup = this.$$watchersBackup || [];
                     this.$$watchers = this.$$watchersBackup;
