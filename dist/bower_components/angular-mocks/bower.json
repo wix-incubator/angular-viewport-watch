@@ -1,10 +1,10 @@
 {
   "name": "angular-mocks",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "license": "MIT",
   "main": "./angular-mocks.js",
   "ignore": [],
   "dependencies": {
-    "angular": "1.7.0"
+    "angular": "1.7.1"
   }
 }
