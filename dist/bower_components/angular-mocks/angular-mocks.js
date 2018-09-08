@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.7.3
+ * @license AngularJS v1.7.4
  * (c) 2010-2018 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -10,15 +10,16 @@
 /* global routeToRegExp: true */
 
 /**
- * @param path {string} path
- * @param opts {Object} options
- * @return {?Object}
+ * @param {string} path - The path to parse. (It is assumed to have query and hash stripped off.)
+ * @param {Object} opts - Options.
+ * @return {Object} - An object containing an array of path parameter names (`keys`) and a regular
+ *     expression (`regexp`) that can be used to identify a matching URL and extract the path
+ *     parameter values.
  *
  * @description
- * Normalizes the given path, returning a regular expression
- * and the original path.
+ * Parses the given path, extracting path parameter names and a regular expression to match URLs.
  *
- * Inspired by pathRexp in visionmedia/express/lib/utils.js.
+ * Originally inspired by `pathRexp` in `visionmedia/express/lib/utils.js`.
  */
 function routeToRegExp(path, opts) {
   var keys = [];
@@ -28,11 +29,11 @@ function routeToRegExp(path, opts) {
     .replace(/(\/)?:(\w+)(\*\?|[?*])?/g, function(_, slash, key, option) {
       var optional = option === '?' || option === '*?';
       var star = option === '*' || option === '*?';
-      keys.push({ name: key, optional: optional });
+      keys.push({name: key, optional: optional});
       slash = slash || '';
       return (
         (optional ? '(?:' + slash : slash + '(?:') +
-        (star ? '([^?#]+?)' : '([^/?#]+)') +
+        (star ? '(.+?)' : '([^/]+)') +
         (optional ? '?)?' : ')')
       );
     })
@@ -43,7 +44,6 @@ function routeToRegExp(path, opts) {
   }
 
   return {
-    originalPath: path,
     keys: keys,
     regexp: new RegExp(
       '^' + pattern + '(?:[?#]|$)',
@@ -951,7 +951,7 @@ angular.mock.TzDate.prototype = Date.prototype;
  * You need to require the `ngAnimateMock` module in your test suite for instance `beforeEach(module('ngAnimateMock'))`
  */
 angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
-  .info({ angularVersion: '1.7.3' })
+  .info({ angularVersion: '1.7.4' })
 
   .config(['$provide', function($provide) {
 
@@ -1825,8 +1825,8 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#when `when`} for more info.
    */
   $httpBackend.whenRoute = function(method, url) {
-    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true});
-    return $httpBackend.when(method, pathObj.regexp, undefined, undefined, pathObj.keys);
+    var parsed = parseRouteUrl(url);
+    return $httpBackend.when(method, parsed.regexp, undefined, undefined, parsed.keys);
   };
 
   /**
@@ -2009,8 +2009,8 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#expect `expect`} for more info.
    */
   $httpBackend.expectRoute = function(method, url) {
-    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true});
-    return $httpBackend.expect(method, pathObj.regexp, undefined, undefined, pathObj.keys);
+    var parsed = parseRouteUrl(url);
+    return $httpBackend.expect(method, parsed.regexp, undefined, undefined, parsed.keys);
   };
 
 
@@ -2138,6 +2138,12 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
       };
     });
   }
+
+  function parseRouteUrl(url) {
+    var strippedUrl = stripQueryAndHash(url);
+    var parseOptions = {caseInsensitiveMatch: true, ignoreTrailingSlashes: true};
+    return routeToRegExp(strippedUrl, parseOptions);
+  }
 }
 
 function assertArgDefined(args, index, name) {
@@ -2146,110 +2152,124 @@ function assertArgDefined(args, index, name) {
   }
 }
 
+function stripQueryAndHash(url) {
+  return url.replace(/[?#].*$/, '');
+}
 
-function MockHttpExpectation(method, url, data, headers, keys) {
+function MockHttpExpectation(expectedMethod, expectedUrl, expectedData, expectedHeaders,
+                             expectedKeys) {
 
-  function getUrlParams(u) {
-    var params = u.slice(u.indexOf('?') + 1).split('&');
-    return params.sort();
-  }
+  this.data = expectedData;
+  this.headers = expectedHeaders;
 
-  function compareUrl(u) {
-    return (url.slice(0, url.indexOf('?')) === u.slice(0, u.indexOf('?')) &&
-      getUrlParams(url).join() === getUrlParams(u).join());
-  }
-
-  this.data = data;
-  this.headers = headers;
-
-  this.match = function(m, u, d, h) {
-    if (method !== m) return false;
-    if (!this.matchUrl(u)) return false;
-    if (angular.isDefined(d) && !this.matchData(d)) return false;
-    if (angular.isDefined(h) && !this.matchHeaders(h)) return false;
+  this.match = function(method, url, data, headers) {
+    if (expectedMethod !== method) return false;
+    if (!this.matchUrl(url)) return false;
+    if (angular.isDefined(data) && !this.matchData(data)) return false;
+    if (angular.isDefined(headers) && !this.matchHeaders(headers)) return false;
     return true;
   };
 
-  this.matchUrl = function(u) {
-    if (!url) return true;
-    if (angular.isFunction(url.test)) return url.test(u);
-    if (angular.isFunction(url)) return url(u);
-    return (url === u || compareUrl(u));
+  this.matchUrl = function(url) {
+    if (!expectedUrl) return true;
+    if (angular.isFunction(expectedUrl.test)) return expectedUrl.test(url);
+    if (angular.isFunction(expectedUrl)) return expectedUrl(url);
+    return (expectedUrl === url || compareUrlWithQuery(url));
   };
 
-  this.matchHeaders = function(h) {
-    if (angular.isUndefined(headers)) return true;
-    if (angular.isFunction(headers)) return headers(h);
-    return angular.equals(headers, h);
+  this.matchHeaders = function(headers) {
+    if (angular.isUndefined(expectedHeaders)) return true;
+    if (angular.isFunction(expectedHeaders)) return expectedHeaders(headers);
+    return angular.equals(expectedHeaders, headers);
   };
 
-  this.matchData = function(d) {
-    if (angular.isUndefined(data)) return true;
-    if (data && angular.isFunction(data.test)) return data.test(d);
-    if (data && angular.isFunction(data)) return data(d);
-    if (data && !angular.isString(data)) {
-      return angular.equals(angular.fromJson(angular.toJson(data)), angular.fromJson(d));
+  this.matchData = function(data) {
+    if (angular.isUndefined(expectedData)) return true;
+    if (expectedData && angular.isFunction(expectedData.test)) return expectedData.test(data);
+    if (expectedData && angular.isFunction(expectedData)) return expectedData(data);
+    if (expectedData && !angular.isString(expectedData)) {
+      return angular.equals(angular.fromJson(angular.toJson(expectedData)), angular.fromJson(data));
     }
     // eslint-disable-next-line eqeqeq
-    return data == d;
+    return expectedData == data;
   };
 
   this.toString = function() {
-    return method + ' ' + url;
+    return expectedMethod + ' ' + expectedUrl;
   };
 
-  this.params = function(u) {
-    return angular.extend(parseQuery(), pathParams());
+  this.params = function(url) {
+    var queryStr = url.indexOf('?') === -1 ? '' : url.substring(url.indexOf('?') + 1);
+    var strippedUrl = stripQueryAndHash(url);
 
-    function pathParams() {
-      var keyObj = {};
-      if (!url || !angular.isFunction(url.test) || !keys || keys.length === 0) return keyObj;
-
-      var m = url.exec(u);
-      if (!m) return keyObj;
-      for (var i = 1, len = m.length; i < len; ++i) {
-        var key = keys[i - 1];
-        var val = m[i];
-        if (key && val) {
-          keyObj[key.name || key] = val;
-        }
-      }
-
-      return keyObj;
-    }
-
-    function parseQuery() {
-      var obj = {}, key_value, key,
-          queryStr = u.indexOf('?') > -1
-          ? u.substring(u.indexOf('?') + 1)
-          : '';
-
-      angular.forEach(queryStr.split('&'), function(keyValue) {
-        if (keyValue) {
-          key_value = keyValue.replace(/\+/g,'%20').split('=');
-          key = tryDecodeURIComponent(key_value[0]);
-          if (angular.isDefined(key)) {
-            var val = angular.isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
-            if (!hasOwnProperty.call(obj, key)) {
-              obj[key] = val;
-            } else if (angular.isArray(obj[key])) {
-              obj[key].push(val);
-            } else {
-              obj[key] = [obj[key],val];
-            }
-          }
-        }
-      });
-      return obj;
-    }
-    function tryDecodeURIComponent(value) {
-      try {
-        return decodeURIComponent(value);
-      } catch (e) {
-        // Ignore any invalid uri component
-      }
-    }
+    return angular.extend(extractParamsFromQuery(queryStr), extractParamsFromPath(strippedUrl));
   };
+
+  function compareUrlWithQuery(url) {
+    var urlWithQueryRe = /^([^?]*)\?(.*)$/;
+
+    var expectedMatch = urlWithQueryRe.exec(expectedUrl);
+    var actualMatch = urlWithQueryRe.exec(url);
+
+    return !!(expectedMatch && actualMatch) &&
+      (expectedMatch[1] === actualMatch[1]) &&
+      (normalizeQuery(expectedMatch[2]) === normalizeQuery(actualMatch[2]));
+  }
+
+  function normalizeQuery(queryStr) {
+    return queryStr.split('&').sort().join('&');
+  }
+
+  function extractParamsFromPath(strippedUrl) {
+    var keyObj = {};
+
+    if (!expectedUrl || !angular.isFunction(expectedUrl.test) ||
+        !expectedKeys || !expectedKeys.length) return keyObj;
+
+    var match = expectedUrl.exec(strippedUrl);
+    if (!match) return keyObj;
+
+    for (var i = 1, len = match.length; i < len; ++i) {
+      var key = expectedKeys[i - 1];
+      var val = match[i];
+      if (key && val) {
+        keyObj[key.name || key] = val;
+      }
+    }
+
+    return keyObj;
+  }
+
+  function extractParamsFromQuery(queryStr) {
+    var obj = {},
+        keyValuePairs = queryStr.split('&').
+            filter(angular.identity).  // Ignore empty segments.
+            map(function(keyValue) { return keyValue.replace(/\+/g, '%20').split('='); });
+
+    angular.forEach(keyValuePairs, function(pair) {
+      var key = tryDecodeURIComponent(pair[0]);
+      if (angular.isDefined(key)) {
+        var val = angular.isDefined(pair[1]) ? tryDecodeURIComponent(pair[1]) : true;
+        if (!hasOwnProperty.call(obj, key)) {
+          obj[key] = val;
+        } else if (angular.isArray(obj[key])) {
+          obj[key].push(val);
+        } else {
+          obj[key] = [obj[key], val];
+        }
+      }
+    });
+
+    return obj;
+  }
+
+  function tryDecodeURIComponent(value) {
+    try {
+      return decodeURIComponent(value);
+    } catch (e) {
+      // Ignore any invalid uri component
+    }
+  }
 }
 
 function createMockXhr() {
@@ -2649,7 +2669,7 @@ angular.module('ngMock', ['ng']).provider({
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
   $provide.decorator('$controller', createControllerDecorator($compileProvider));
   $provide.decorator('$httpBackend', angular.mock.$httpBackendDecorator);
-}]).info({ angularVersion: '1.7.3' });
+}]).info({ angularVersion: '1.7.4' });
 
 /**
  * @ngdoc module
@@ -2664,7 +2684,7 @@ angular.module('ngMock', ['ng']).provider({
  */
 angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
   $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-}]).info({ angularVersion: '1.7.3' });
+}]).info({ angularVersion: '1.7.4' });
 
 /**
  * @ngdoc service
