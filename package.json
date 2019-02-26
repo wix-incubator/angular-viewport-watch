@@ -1,6 +1,6 @@
 {
   "name": "angular-viewport-watch",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^2.10.0",
@@ -16,7 +16,7 @@
     "test": "#tbd",
     "start": "grunt serve"
   },
-  "private": true,
+  "private": false,
   "publishConfig": {
     "registry": "http://repo.dev.wix/artifactory/api/npm/npm-local/"
   }
