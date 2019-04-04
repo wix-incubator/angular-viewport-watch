@@ -1,6 +1,6 @@
 {
   "name": "angular-viewport-watch",
-  "version": "0.1.148",
+  "version": "0.1.149",
   "main": "angular-viewport-watch.js",
   "ignore": [
     ".*",
